@@ -12,7 +12,7 @@ import { Product } from "@/products/entities/product.entity";
 import request from "supertest";
 import { randomUUID } from "crypto";
 
-describe("Update product (E2E)", () => {
+describe("Delete product (E2E)", () => {
   let app: INestApplication;
   let productRepository: Repository<Product>;
 
@@ -39,59 +39,30 @@ describe("Update product (E2E)", () => {
     await cleanupTableProductsDatabase();
   });
 
-  it("[PATCH] /products/:id - Deve ser possivel atualizar um produto", async () => {
+  it("[DELETE] /products/:id - Deve ser possivel deletar um produto", async () => {
     const product = await productRepository.save({
       name: "Notebook Dell Inspiron 15",
       price: 2599.99,
       sku: "DELL-NB-001",
     });
 
-    const response = await request(app.getHttpServer())
-      .patch(`/products/${product.id}`)
-      .send({
-        name: "Notebook Dell Inspiron 15 Gaming",
-      });
+    const response = await request(app.getHttpServer()).delete(
+      `/products/${product.id}`
+    );
 
-    expect(response.statusCode).toBe(200); //status code esperado no retorno da rota de atualização de produto
+    expect(response.statusCode).toBe(204);
 
     const productOnDatabase = await productRepository
       .createQueryBuilder("product")
       .where("product.name = :name", {
         name: "Notebook Dell Inspiron 15 Gaming",
       })
-      .getOne(); // Teste com o query build e não com o retorno para verificar a persistencia no banco correta
+      .getOne();
 
-    expect(productOnDatabase).toBeTruthy(); //verifica dentro do banco de dados se o produto foi atualizado
+    expect(productOnDatabase).toBeNull();
   });
 
-  it("Não deve ser possivel atualizar um produto com SKU já existente", async () => {
-    await productRepository.save({
-      name: "Notebook Dell Inspiron 15",
-      price: 2599.99,
-      sku: "DELL-NB-001",
-    });
-
-    const product = await productRepository.save({
-      name: "Notebook Dell Vostro 4",
-      price: 3999.99,
-      sku: "DELL-VO-004",
-    });
-
-    const response = await request(app.getHttpServer())
-      .patch(`/products/${product.id}`)
-      .send({
-        sku: "DELL-NB-001", //passado sku do primeiro produto
-      });
-
-    expect(response.statusCode).toBe(409);
-    expect(response.body).toEqual({
-      statusCode: 409,
-      message: "SKU já existe",
-      error: "Conflict",
-    });
-  });
-
-  it("Não deve ser possivel atualizar um produto com um ID invalido", async () => {
+  it("Não deve ser possivel deletar um produto com um ID invalido", async () => {
     const response = await request(app.getHttpServer())
       .patch(`/products/${randomUUID()}`) // uuid invalido
       .send({
