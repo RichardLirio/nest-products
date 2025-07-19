@@ -8,6 +8,7 @@ import {
   Query,
   Param,
   Patch,
+  Delete,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -142,8 +143,8 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  // PATCH /products
-  // Update products parcialmente
+  // PATCH /products/:id
+  // Update products
   @Patch(":id")
   @ApiOperation({ summary: "Atualizar produto (Zod partial validation)" })
   @ApiParam({ name: "id", description: "ID do produto" })
@@ -209,5 +210,17 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto
   ) {
     return this.productsService.update(id, updateProductDto);
+  }
+
+  // DELETE /products/:id
+  // excluir produto
+  @Delete(":id")
+  @HttpCode(204)
+  @ApiOperation({ summary: "Remover produto" })
+  @ApiParam({ name: "id", description: "ID do produto" })
+  @ApiResponse({ status: 204, description: "Produto removido com sucesso" })
+  @ApiResponse({ status: 404, description: "Produto não encontrado" })
+  remove(@Param("id", new ZodValidationPipe(z.string().uuid())) id: string) {
+    return this.productsService.remove(id);
   }
 }

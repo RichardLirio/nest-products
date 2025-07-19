@@ -103,4 +103,14 @@ export class ProductsService {
     });
     return this.enrichProduct(updatedProduct);
   }
+
+  async remove(id: string): Promise<void> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException("Produto não encontrado");
+    }
+
+    await this.productRepository.delete(id);
+  }
 }
