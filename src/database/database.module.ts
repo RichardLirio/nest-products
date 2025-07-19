@@ -17,7 +17,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
           schema, // Define o schema explicitamente
           entities: [Product],
           migrations: [__dirname + "/migrations/*.ts"],
-          synchronize: false,
+          synchronize: false, // Desativei para não criar as tabelas atraves das entidades automaticamente
           migrationsRun: false, // Evita rodar migrações automaticamente
         };
       },
