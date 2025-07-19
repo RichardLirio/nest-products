@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ProductsModule } from "../products/products.module";
 import { ConfigModule } from "@nestjs/config";
-import { envSchema } from "../env";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { DatabaseModule } from "@/database/database.module";
+import { ProductsModule } from "./products/products.module";
+import { envSchema } from "./env";
 
 @Module({
   imports: [
