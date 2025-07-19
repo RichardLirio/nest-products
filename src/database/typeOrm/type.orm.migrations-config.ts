@@ -2,7 +2,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import "dotenv/config";
 import { Product } from "@/products/entities/product.entity";
 
-const url = new URL(process.env.DATABASE_URL!);
+const url = new URL(process.env.DATABASE_URL);
 const schema = url.searchParams.get("schema") || "public"; // Extrai o schema da URL
 
 const dataSourceOptions: DataSourceOptions = {

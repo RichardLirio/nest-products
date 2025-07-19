@@ -5,7 +5,7 @@ export class ProductsTable1752892728410 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const schema =
-      new URL(process.env.DATABASE_URL!).searchParams.get("schema") || "public";
+      new URL(process.env.DATABASE_URL).searchParams.get("schema") || "public";
     // Verifica se a tabela já existe
     const tableExists = await queryRunner.hasTable(`"${schema}"."users"`);
     if (!tableExists) {
@@ -23,7 +23,7 @@ export class ProductsTable1752892728410 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     const schema =
-      new URL(process.env.DATABASE_URL!).searchParams.get("schema") || "public";
+      new URL(process.env.DATABASE_URL).searchParams.get("schema") || "public";
     await queryRunner.query(`DROP TABLE IF EXISTS "${schema}"."products"`);
   }
 }
