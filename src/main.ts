@@ -24,7 +24,9 @@ async function bootstrap() {
 
   // Habilitar CORS
   app.enableCors({
-    origin: allowedOrigins,
+    origin: allowedOrigins || ["http://localhost:3333"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
   });
 
   // Swagger/OpenAPI
