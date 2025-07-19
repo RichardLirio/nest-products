@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ProductsModule } from "../products/products.module";
-import { ProductsController } from "../products/products.controller";
 import { ConfigModule } from "@nestjs/config";
 import { envSchema } from "../env";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { DatabaseModule } from "@/database/database.module";
 
 @Module({
   imports: [
@@ -20,8 +20,9 @@ import { ThrottlerModule } from "@nestjs/throttler";
       isGlobal: true,
     }),
     ProductsModule,
+    DatabaseModule,
   ],
-  controllers: [ProductsController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
