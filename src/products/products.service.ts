@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from "@nestjs/common";
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Product } from "./entities/product.entity";
@@ -42,11 +46,6 @@ export class ProductsService {
       where: { sku: createProductDto.sku },
     });
 
-    console.log(
-      "🚀 ~ ProductsService ~ create ~ productAlreadyExist:",
-      productAlreadyExist
-    );
-
     if (productAlreadyExist) {
       throw new ConflictException("SKU já existe");
     }
@@ -66,5 +65,15 @@ export class ProductsService {
     });
 
     return products.map((product) => this.enrichProduct(product));
+  }
+
+  async findOne(id: string): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException("Produto não encontrado");
+    }
+
+    return this.enrichProduct(product);
   }
 }
