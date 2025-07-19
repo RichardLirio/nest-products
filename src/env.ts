@@ -7,7 +7,7 @@ export const envSchema = z.object({
   DATABASE_DB: z.string(),
   DATABASE_URL: z.url(),
   VERSION: z.coerce.number().default(1),
-  CORS_ALLOWED_ORIGINS: z.string(),
+  CORS_ALLOWED_ORIGINS: z.string().default("http://localhost:3333"),
 }); //esquema do arquivo env
 
 export type Env = z.infer<typeof envSchema>;
