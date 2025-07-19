@@ -3,9 +3,13 @@ import { AppModule } from "./app/app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { Env } from "./env";
 import { ConfigService } from "@nestjs/config";
+import helmet from "helmet";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Segurança: Cria headers http para segurança da api
+  app.use(helmet());
 
   const configService = app.get<ConfigService<Env>>(ConfigService); // criando instacia do config service
   const port = configService.get("PORT", { infer: true });
