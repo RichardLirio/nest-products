@@ -42,11 +42,6 @@ export class ProductsService {
       where: { sku: createProductDto.sku },
     });
 
-    console.log(
-      "🚀 ~ ProductsService ~ create ~ productAlreadyExist:",
-      productAlreadyExist
-    );
-
     if (productAlreadyExist) {
       throw new ConflictException("SKU já existe");
     }
