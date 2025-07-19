@@ -1,9 +1,72 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Post, Body, HttpCode, UsePipes } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
+import { ProductsService } from "./products.service";
+import {
+  CreateProductDto,
+  createProductSchema,
+} from "./dto/create.products.dto";
+import { ProductResponseDto } from "./dto/product-response.dto";
+import { ZodValidationPipe } from "@/pipes/zod-validation-pipe";
+import { CreateProductSwaggerDto } from "./dto/create.products.swagger.dto";
 
+@ApiTags("products")
 @Controller("products")
 export class ProductsController {
-  @Get()
-  findAll() {
-    return { status: "ok" };
+  constructor(private readonly productsService: ProductsService) {}
+
+  @Post()
+  @HttpCode(200)
+  @UsePipes(new ZodValidationPipe(createProductSchema))
+  @ApiOperation({ summary: "Criar um novo produto" })
+  @ApiBody({
+    type: CreateProductSwaggerDto,
+    examples: {
+      notebook: {
+        summary: "Notebook",
+        value: {
+          name: "Notebook Dell Inspiron 15",
+          price: 2599.99,
+          sku: "DELL-NB-001",
+        },
+      },
+      smartphone: {
+        summary: "Smartphone",
+        value: {
+          name: "iPhone 15 Pro Max",
+          price: 8999.99,
+          sku: "APPL-IP15-001",
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Produto criado com sucesso",
+    type: ProductResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Dados inválidos (Zod validation failed)",
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          "Nome deve ter no máximo 255 caracteres",
+          "Preço deve ser maior que zero",
+          "SKU deve conter apenas letras, números, hífens e underscores",
+        ],
+        error: "Bad Request",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: "SKU já existe",
+    schema: {
+      example: { message: "SKU já existe", error: "Conflict", statusCode: 409 },
+    },
+  })
+  create(@Body() createProductDto: CreateProductDto) {
+    return this.productsService.create(createProductDto);
   }
 }
