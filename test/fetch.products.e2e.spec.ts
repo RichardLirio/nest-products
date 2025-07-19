@@ -69,4 +69,34 @@ describe("Fetch Products (E2E)", () => {
       ])
     );
   });
+
+  it("Deve ser possivel realizar a paginação com 20 itens por pagina", async () => {
+    for (let i = 1; i <= 21; i++) {
+      await createProduct(
+        `Notebook Dell Inspiron ${i}`,
+        2599.99,
+        `DELL-NB-00${i}`
+      );
+    }
+
+    const response = await request(app.getHttpServer())
+      .get("/products")
+      .query({ page: 2 });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(String),
+          name: "Notebook Dell Inspiron 21",
+          price: 2599.99,
+          sku: "DELL-NB-0021",
+          first_missing_letter: "a",
+          created_at: expect.any(String),
+          updated_at: expect.any(String),
+        }),
+      ])
+    );
+  });
 });

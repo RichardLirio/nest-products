@@ -59,7 +59,6 @@ export class ProductsService {
     const perPage = 20; //itens por pagina
 
     const products = await this.productRepository.find({
-      order: { name: "ASC" },
       take: perPage,
       skip: (page - 1) * perPage,
     });

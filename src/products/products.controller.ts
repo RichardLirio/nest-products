@@ -36,7 +36,8 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema);
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  // POST /products Criação de produto
+  // POST /products
+  // products Criação de produto
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createProductSchema))
