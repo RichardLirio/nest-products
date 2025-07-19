@@ -1,11 +1,27 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+import { AppModule } from "./app/app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { Env } from "./env";
+import { ConfigService } from "@nestjs/config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get<ConfigService<Env>>(ConfigService); // criando instacia do config service
+  const port = configService.get("PORT", { infer: true });
+
+  // Definindo prefixo da versão da api
+  const apiVersion: string = configService.getOrThrow("VERSION");
+  app.setGlobalPrefix(`api/v${apiVersion}`);
+
+  const allowedOrigins: string[] = configService
+    .getOrThrow("CORS_ALLOWED_ORIGINS")
+    .split(",");
+
   // Habilitar CORS
-  app.enableCors();
+  app.enableCors({
+    origin: allowedOrigins,
+  });
 
   // Swagger/OpenAPI
   const config = new DocumentBuilder()
@@ -19,7 +35,7 @@ async function bootstrap() {
 
   await app.listen(3333);
 
-  console.log("🚀 Servidor rodando na porta 3333");
-  console.log("📚 Documentação Swagger: http://localhost:3333/docs");
+  console.log(`🚀 Servidor rodando na porta ${port}`);
+  console.log(`📚 Documentação Swagger: http://localhost:${port}/docs`);
 }
 bootstrap();
