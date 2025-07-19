@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateProductSwaggerDto {
+export class UpdateProductSwaggerDto {
   @ApiProperty({
     description: "Nome do produto",
     example: "Notebook",
-    required: true,
+    required: false,
     minLength: 1,
     maxLength: 255,
     type: String,
@@ -14,7 +14,7 @@ export class CreateProductSwaggerDto {
   @ApiProperty({
     description: "Preço do produto",
     example: 2599.99,
-    required: true,
+    required: false,
     maximum: 999999.99,
     type: Number,
   })
@@ -24,7 +24,7 @@ export class CreateProductSwaggerDto {
     description: "SKU único do produto",
     example: "APPL-IP15-001",
     type: String,
-    required: true,
+    required: false,
     maxLength: 100,
   })
   sku: string;

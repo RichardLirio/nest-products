@@ -7,6 +7,7 @@ import {
   Get,
   Query,
   Param,
+  Patch,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -28,6 +29,8 @@ import {
   pageQueryParamSchema,
 } from "./dto/query.products.dto";
 import z from "zod/v3";
+import { UpdateProductSwaggerDto } from "./dto/update.products.swagger.dto";
+import { UpdateProductDto } from "./dto/update.products.dto";
 
 const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema);
 
@@ -137,5 +140,74 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: "Produto não encontrado" })
   findOne(@Param("id", new ZodValidationPipe(z.string().uuid())) id: string) {
     return this.productsService.findOne(id);
+  }
+
+  // PATCH /products
+  // Update products parcialmente
+  @Patch(":id")
+  @ApiOperation({ summary: "Atualizar produto (Zod partial validation)" })
+  @ApiParam({ name: "id", description: "ID do produto" })
+  @ApiBody({
+    type: UpdateProductSwaggerDto,
+    examples: {
+      partial: {
+        summary: "Atualização parcial",
+        value: {
+          name: "Notebook Dell Inspiron 15 Gaming",
+        },
+      },
+      complete: {
+        summary: "Atualização completa",
+        value: {
+          name: "Notebook Dell Inspiron 15 Gaming",
+          price: 3299.99,
+          sku: "DELL-NB-001-GAMING",
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Produto atualizado com validação Zod",
+    type: ProductResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Dados inválidos (Zod validation)",
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          "name: Nome deve ter no máximo 255 caracteres",
+          "price: Preço deve ser maior que zero",
+          "SKU deve conter apenas letras, números, hífens e underscores",
+        ],
+        error: "Bad Request",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Produto não encontrado",
+    schema: {
+      example: {
+        message: "Produto não encontrado",
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: "SKU já existe",
+    schema: {
+      example: { message: "SKU já existe", error: "Conflict", statusCode: 409 },
+    },
+  })
+  update(
+    @Param("id", new ZodValidationPipe(z.string().uuid())) id: string,
+    @Body() updateProductDto: UpdateProductDto
+  ) {
+    return this.productsService.update(id, updateProductDto);
   }
 }

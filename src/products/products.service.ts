@@ -7,6 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Product } from "./entities/product.entity";
 import { CreateProductDto } from "./dto/create.products.dto";
+import { UpdateProductDto } from "./dto/update.products.dto";
 
 @Injectable()
 export class ProductsService {
@@ -74,5 +75,32 @@ export class ProductsService {
     }
 
     return this.enrichProduct(product);
+  }
+
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto
+  ): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException("Produto não encontrado");
+    }
+
+    if (updateProductDto.sku) {
+      const productAlreadyExist = await this.productRepository.findOne({
+        where: { sku: updateProductDto.sku },
+      });
+
+      if (productAlreadyExist) {
+        throw new ConflictException("SKU já existe");
+      }
+    }
+
+    await this.productRepository.update(id, updateProductDto);
+    const updatedProduct = await this.productRepository.findOne({
+      where: { id },
+    });
+    return this.enrichProduct(updatedProduct);
   }
 }
