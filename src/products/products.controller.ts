@@ -1,4 +1,12 @@
-import { Controller, Post, Body, HttpCode, UsePipes } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  UsePipes,
+  Get,
+  Query,
+} from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { ProductsService } from "./products.service";
 import {
@@ -8,6 +16,12 @@ import {
 import { ProductResponseDto } from "./dto/product-response.dto";
 import { ZodValidationPipe } from "@/pipes/zod-validation-pipe";
 import { CreateProductSwaggerDto } from "./dto/create.products.swagger.dto";
+import {
+  PageQueryParamSchema,
+  pageQueryParamSchema,
+} from "./dto/query.products.dto";
+
+const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema);
 
 @ApiTags("products")
 @Controller("products")
@@ -15,7 +29,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @HttpCode(200)
+  @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createProductSchema))
   @ApiOperation({ summary: "Criar um novo produto" })
   @ApiBody({
@@ -66,7 +80,24 @@ export class ProductsController {
       example: { message: "SKU já existe", error: "Conflict", statusCode: 409 },
     },
   })
-  create(@Body() createProductDto: CreateProductDto) {
+  async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Get()
+  @HttpCode(200)
+  @ApiOperation({
+    summary:
+      "Listar todos os produtos ordenados por nome (Paginado com 20 itens por página)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Lista de produtos com validação Zod",
+    type: [ProductResponseDto],
+  })
+  async findAll(
+    @Query("page", queryValidationPipe) page: PageQueryParamSchema
+  ) {
+    return this.productsService.findAll(page);
   }
 }

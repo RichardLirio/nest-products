@@ -12,7 +12,8 @@ export class ProductsService {
   ) {}
 
   // Encontra a primeira letra ausente no nome do produto
-
+  // Primeiro normalizo para minusculo, crio um new set para separar cada letra, dou um loop for com base na tabela do charcode para
+  // encotrar a primeira letra faltante. Tabela do charcode no readme
   private findFirstMissingLetter(name: string): string {
     const normalizedName = name.toLowerCase().replace(/[^a-z]/g, "");
     const presentLetters = new Set(normalizedName);
@@ -28,7 +29,7 @@ export class ProductsService {
   }
 
   //Adiciona a primeira letra ausente ao produto
-
+  //Todo retorno vai pessar por esse metodo para colocar a letra, porém não irei persistir no banco
   private enrichProduct(product: Product): Product {
     return {
       ...product,
@@ -41,6 +42,11 @@ export class ProductsService {
       where: { sku: createProductDto.sku },
     });
 
+    console.log(
+      "🚀 ~ ProductsService ~ create ~ productAlreadyExist:",
+      productAlreadyExist
+    );
+
     if (productAlreadyExist) {
       throw new ConflictException("SKU já existe");
     }
@@ -48,5 +54,17 @@ export class ProductsService {
     const product = this.productRepository.create(createProductDto);
     const savedProduct = await this.productRepository.save(product);
     return this.enrichProduct(savedProduct);
+  }
+
+  async findAll(page: number): Promise<Product[]> {
+    const perPage = 20; //itens por pagina
+
+    const products = await this.productRepository.find({
+      order: { name: "ASC" },
+      take: perPage,
+      skip: (page - 1) * perPage,
+    });
+
+    return products.map((product) => this.enrichProduct(product));
   }
 }
