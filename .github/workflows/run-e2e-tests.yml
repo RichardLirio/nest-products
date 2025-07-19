@@ -27,7 +27,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run test
+      - run: npm run test:e2e
         env:
           DATABASE_URL: "postgresql://docker:docker@localhost:5432/mydb?schema=public"
           
