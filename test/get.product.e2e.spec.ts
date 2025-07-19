@@ -11,7 +11,7 @@ import {
 } from "test/setup-e2e";
 import { Product } from "@/products/entities/product.entity";
 
-describe("Fetch Products (E2E)", () => {
+describe("Get Products (E2E)", () => {
   let app: INestApplication;
   let productRepository: Repository<Product>;
 
@@ -46,27 +46,28 @@ describe("Fetch Products (E2E)", () => {
     });
   }
 
-  it("[GET] /api/v1/product - Deve ser possivel buscar produtos", async () => {
-    await createProduct("Notebook Dell Inspiron 15", 2599.99, "DELL-NB-001");
+  it("[GET] /api/v1/product/:id - Deve ser possivel buscar o produto pelo ID", async () => {
+    const product = await createProduct(
+      "Notebook Dell Inspiron 15",
+      2599.99,
+      "DELL-NB-001"
+    );
 
-    const response = await request(app.getHttpServer())
-      .get("/products")
-      .query({ page: 1 });
+    const response = await request(app.getHttpServer()).get(
+      `/products/${product.id}`
+    );
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveLength(1);
     expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: expect.any(String),
-          name: "Notebook Dell Inspiron 15",
-          price: 2599.99,
-          sku: "DELL-NB-001",
-          first_missing_letter: "a",
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-        }),
-      ])
+      expect.objectContaining({
+        id: expect.any(String),
+        name: "Notebook Dell Inspiron 15",
+        price: 2599.99,
+        sku: "DELL-NB-001",
+        first_missing_letter: "a",
+        created_at: expect.any(String),
+        updated_at: expect.any(String),
+      })
     );
   });
 });

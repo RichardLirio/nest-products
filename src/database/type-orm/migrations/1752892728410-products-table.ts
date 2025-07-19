@@ -7,7 +7,7 @@ export class ProductsTable1752892728410 implements MigrationInterface {
     const schema =
       new URL(process.env.DATABASE_URL).searchParams.get("schema") || "public";
     // Verifica se a tabela já existe
-    const tableExists = await queryRunner.hasTable(`"${schema}"."users"`);
+    const tableExists = await queryRunner.hasTable(`"${schema}"."products"`);
     if (!tableExists) {
       await queryRunner.query(
         ` CREATE TABLE "${schema}"."products" (

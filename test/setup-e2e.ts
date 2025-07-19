@@ -44,7 +44,7 @@ export async function cleanupTestDatabase() {
   await connection.destroy();
 }
 
-export async function cleanupTableUserDatabase() {
+export async function cleanupTableProductsDatabase() {
   const connection = new DataSource({
     type: "postgres",
     url: process.env.DATABASE_URL,

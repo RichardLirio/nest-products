@@ -6,8 +6,15 @@ import {
   UsePipes,
   Get,
   Query,
+  Param,
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from "@nestjs/swagger";
 import { ProductsService } from "./products.service";
 import {
   CreateProductDto,
@@ -20,6 +27,7 @@ import {
   PageQueryParamSchema,
   pageQueryParamSchema,
 } from "./dto/query.products.dto";
+import z from "zod/v3";
 
 const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema);
 
@@ -28,6 +36,7 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema);
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  // POST /products Criação de produto
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createProductSchema))
@@ -84,6 +93,8 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  // GET /products
+  // Lista de produtos
   @Get()
   @HttpCode(200)
   @ApiOperation({
@@ -99,5 +110,31 @@ export class ProductsController {
     @Query("page", queryValidationPipe) page: PageQueryParamSchema
   ) {
     return this.productsService.findAll(page);
+  }
+
+  // GET /products/:id
+  // Listar produto por id
+  @Get(":id")
+  @ApiOperation({ summary: "Buscar produto por ID (com validação Zod)" })
+  @ApiParam({ name: "id", description: "ID do produto (validado via Zod)" })
+  @ApiResponse({
+    status: 200,
+    description: "Produto encontrado",
+    type: ProductResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "ID inválido (Zod validation)",
+    schema: {
+      example: {
+        statusCode: 400,
+        message: "ID deve ser um número inteiro positivo",
+        error: "Bad Request",
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: "Produto não encontrado" })
+  findOne(@Param("id", new ZodValidationPipe(z.string().uuid())) id: string) {
+    return this.productsService.findOne(id);
   }
 }

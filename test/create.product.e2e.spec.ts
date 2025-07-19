@@ -4,7 +4,7 @@ import { AppModule } from "@/app.module";
 import { Repository } from "typeorm";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import {
-  cleanupTableUserDatabase,
+  cleanupTableProductsDatabase,
   cleanupTestDatabase,
   setupTestDatabase,
 } from "test/setup-e2e";
@@ -35,10 +35,10 @@ describe("Create product (E2E)", () => {
   }); //derruba schemas apos os testes
 
   beforeEach(async () => {
-    await cleanupTableUserDatabase();
+    await cleanupTableProductsDatabase();
   });
 
-  test("[POST] /products", async () => {
+  it("[POST] /products - Deve ser possivel criar produto", async () => {
     const response = await request(app.getHttpServer()).post("/products").send({
       name: "Notebook Dell Inspiron 15",
       price: 2599.99,
