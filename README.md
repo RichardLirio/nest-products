@@ -51,6 +51,67 @@ npm install
 cp .env.example .env
 ```
 
+
+# 🛠️ Instalação com Docker
+
+Siga os passos abaixo para executar a aplicação usando Docker:
+
+## Pré-requisitos
+- Docker instalado em sua máquina
+- Docker Compose instalado
+
+## Passo a passo
+
+### 1. Clone o repositório
+```bash
+git clone https://github.com/RichardLirio/nest-products.git
+```
+
+### 2. Navegue até o diretório do projeto
+```bash
+cd nest-products
+```
+
+### 3. Configure as variáveis de ambiente
+```bash
+cp .env.example .env
+```
+
+### 4. Ajuste a configuração do banco de dados
+Abra o arquivo `.env` e configure a `DATABASE_URL` para o endereço do serviço do banco de dados:
+
+```env
+DATABASE_URL="postgresql://root:randompassword@postgres:5432/mydb?schema=public"
+```
+
+### 5. Correção de quebra de linha (se necessário)
+**⚠️ Nota:** Em sistemas Windows, pode ser necessário converter o arquivo `docker-entrypoint.sh` para formato LF:
+- Abra o arquivo `docker-entrypoint.sh` em um editor de texto
+- Converta as quebras de linha de CRLF para LF
+- Salve o arquivo
+
+### 6. Execute a aplicação
+```bash
+docker compose up
+```
+
+### 7. Acesse a aplicação
+Após a inicialização completa dos containers, a aplicação estará disponível em:
+- **API:** http://localhost:3333
+- **Banco de dados:** localhost:5432
+
+---
+
+**💡 Dica:** Para executar em segundo plano, use o comando:
+```bash
+docker compose up -d
+```
+
+**🔄 Para parar a aplicação:**
+```bash
+docker compose down
+```
+
 ## ⚙️ Configuração de Ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
