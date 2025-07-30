@@ -39,7 +39,7 @@ COPY . .
 
 RUN npm run build
 
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # --- Stage final para produção ---
 FROM base AS production
@@ -52,4 +52,4 @@ USER productsapp
 
 EXPOSE 3333
 
-CMD ["dumb-init", "node", "dist/app.js"]
+CMD ["dumb-init", "node", "dist/src/main.js"]
