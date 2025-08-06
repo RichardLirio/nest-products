@@ -52,7 +52,7 @@ cp .env.example .env
 ```
 
 
-# 🛠️ Instalação com Docker
+# 🛠️ Instalação com Docker para o target de Desenvolvimento
 
 Siga os passos abaixo para executar a aplicação usando Docker:
 
@@ -98,11 +98,78 @@ docker compose up
 ### 7. Acesse a aplicação
 Após a inicialização completa dos containers, a aplicação estará disponível em:
 - **API:** http://localhost:3333
+- **Swagger** http://localhost:3333/docs
 - **Banco de dados:** localhost:5432
 
 ---
 
 **💡 Dica:** Para executar em segundo plano, use o comando:
+```bash
+docker compose up -d
+```
+
+**🔄 Para parar a aplicação:**
+```bash
+docker compose down
+```
+
+# 🛠️ Instalação com Docker para o target de Produção
+
+Siga os passos abaixo para configurar e executar a aplicação em ambiente de produção usando Docker:
+
+## Pré-requisitos
+- Docker instalado em sua máquina
+- Docker Compose instalado
+- Git Bash ou WSL (para usuários Windows)
+
+## Passo a passo
+
+### 1. Clone o repositório
+```bash
+git clone https://github.com/RichardLirio/nest-products.git
+```
+
+### 2. Navegue até o diretório do projeto
+```bash
+cd nest-products
+```
+
+### 3. Configure as variáveis de ambiente
+```bash
+cp .env.example .env
+```
+
+### 4. Ajuste a configuração do banco de dados
+Abra o arquivo `.env` e configure a `DATABASE_URL` para o endereço do serviço do banco de dados:
+
+```env
+DATABASE_URL="postgresql://root:randompassword@postgres:5432/mydb?schema=public"
+```
+
+### 5. Correção de quebra de linha (se necessário)
+**⚠️ Nota:** Em sistemas Windows, pode ser necessário converter o arquivo `deploy-with-migrations.sh` para o formato LF:
+- Abra o arquivo `deploy-with-migrations.sh` em um editor de texto
+- Converta as quebras de linha de CRLF para LF
+- Salve o arquivo
+
+### 6. Execute a aplicação
+Execute o script de implantação otimizado para produção, que reduz o tamanho da imagem de aproximadamente 700 MB para cerca de 200 MB:
+
+```bash
+./deploy-with-migrations.sh
+```
+
+**⚠️ Nota para usuários Windows:** Execute o comando acima utilizando Git Bash ou WSL.
+
+### 7. Acesse a aplicação
+Após a inicialização completa dos containers, a aplicação estará disponível em:
+- **API:** http://localhost:3333
+- **Swagger:** http://localhost:3333/docs
+- **Banco de dados:** localhost:5432
+
+---
+
+**💡 Dica:** Para executar em segundo plano, adicione a flag `-d` ao comando do Docker Compose dentro do script, ou execute manualmente:
 ```bash
 docker compose up -d
 ```

@@ -1,0 +1,44 @@
+
+services:
+  migration-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: typeorm-migrations
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    command: npm run migration:run
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - api-products-network
+
+  postgres:
+    image: postgres:latest
+    container_name: api-products-pg
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_DB}
+      - PGDATA=/data/postgres
+    volumes:
+      - ./data/pg:/data/postgres
+    networks:
+      - api-products-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  api-products-network:
+    driver: bridge
