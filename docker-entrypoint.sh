@@ -64,9 +64,12 @@ main() {
     # 1. Aguarda o banco de dados
     wait_for_db
 
-    # 2. Executa migrações TypeORM
-    # A execução das migrações só ocorre se a conexão com o DB for bem-sucedida.
-    run_typeorm_migrations
+    # 2. Executa migrações SOMENTE se não for produção
+    if [ "$NODE_ENV" != "production" ]; then
+        run_typeorm_migrations
+    else
+        echo "🚫 Ambiente de produção detectado. Ignorando execução automática de migrações."
+    fi
 
     echo "🎉 Preparação concluída. Iniciando aplicação..."
 
